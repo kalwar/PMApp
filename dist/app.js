@@ -97,6 +97,18 @@ class ProjectState extends State {
             listernFn(this.projects.slice());
         }
     }
+    moveProject(projectId, newStatus) {
+        const project = this.projects.find((prj) => prj.id === projectId);
+        if (project && project.status !== newStatus) {
+            project.status = newStatus;
+            this.updateListeners();
+        }
+    }
+    updateListeners() {
+        for (const listernFn of this.listeners) {
+            listernFn(this.projects.slice());
+        }
+    }
 }
 const projectState = ProjectState.getInstance();
 class ProjectItem extends Component {
@@ -150,7 +162,8 @@ class ProjectList extends Component {
         listEl.classList.add('droppable');
     }
     dropHandler(event) {
-        console.log(event.dataTransfer.getData('text/plain'));
+        const prjId = event.dataTransfer.getData('text/plain');
+        projectState.moveProject(prjId, this.type === 'active' ? ProjectStatus.Active : ProjectStatus.Finished);
     }
     dragLeaveHandler(_) {
         const listEl = this.element.querySelector('ul');
