@@ -12,7 +12,7 @@ The output directory is automatically generated based on tsconfig.json
 
 # PM app (step-by-step)
 
-ProjectManager(PM)App using TS beings ...
+ProjectManager(PM)App using TS
 
 # Use for reference
 
