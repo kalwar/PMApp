@@ -1,4 +1,3 @@
-// Drag and drop interface
 interface Draggable {
   dragStartHandler(event: DragEvent): void;
   dragEndHandler(event: DragEvent): void;
@@ -24,6 +23,17 @@ class Project {
     public people: number,
     public status: ProjectStatus
   ) {}
+}
+
+// Project State Managemenent with own custom type
+type Listener<T> = (items: T[]) => void;
+
+class State<T> {
+  protected listeners: Listener<T>[] = [];
+
+  addListener(listernFn: Listener<T>) {
+    this.listeners.push(listernFn);
+  }
 }
 
 // creating a re-usable validation functionality
@@ -85,7 +95,6 @@ function autobind(_: any, _2: string, descriptor: PropertyDescriptor) {
   return adjDescriptor;
 }
 
-// Component Base Class
 abstract class Component<T extends HTMLElement, U extends HTMLElement> {
   templateElement: HTMLTemplateElement;
   hostElement: T;
@@ -120,17 +129,6 @@ abstract class Component<T extends HTMLElement, U extends HTMLElement> {
   }
   abstract configure(): void;
   abstract renderContent(): void;
-}
-
-// Project State Managemenent with own custom type
-type Listener<T> = (items: T[]) => void;
-
-class State<T> {
-  protected listeners: Listener<T>[] = [];
-
-  addListener(listernFn: Listener<T>) {
-    this.listeners.push(listernFn);
-  }
 }
 
 //Project state management
@@ -172,8 +170,8 @@ class ProjectState extends State<Project> {
     }
   }
   private updateListeners() {
-    for (const listernFn of this.listeners) {
-      listernFn(this.projects.slice());
+    for (const listenerFn of this.listeners) {
+      listenerFn(this.projects.slice());
     }
   }
 }
@@ -182,11 +180,9 @@ const projectState = ProjectState.getInstance();
 
 class ProjectItem
   extends Component<HTMLUListElement, HTMLLIElement>
-  implements Draggable
-{
+  implements Draggable {
   private project: Project;
 
-  // getter to assign number of persons
   get persons() {
     if (this.project.people === 1) {
       return '1 person';
@@ -197,8 +193,8 @@ class ProjectItem
 
   constructor(hostId: string, project: Project) {
     super('single-project', hostId, false, project.id);
-
     this.project = project;
+
     this.configure();
     this.renderContent();
   }
@@ -228,7 +224,7 @@ class ProjectItem
 class ProjectList extends Component<HTMLDivElement, HTMLElement> {
   assignedProjects: Project[];
   constructor(private type: 'active' | 'finished') {
-    super('project-list', 'app', false, `${type}-projects`); //getting an access to methods and properties of our parent component class
+    super('project-list', 'app', false, `${type}-projects`);
     this.assignedProjects = [];
     this.configure();
     this.renderContent();
@@ -309,9 +305,7 @@ class ProjectInput extends Component<HTMLDivElement, HTMLFormElement> {
     ) as HTMLInputElement;
     this.configure();
   }
-  configure() {
-    this.element.addEventListener('submit', this.submitHandler);
-  }
+
   renderContent() {}
 
   // collect inputs from PMApp form
@@ -363,9 +357,15 @@ class ProjectInput extends Component<HTMLDivElement, HTMLFormElement> {
     if (Array.isArray(userInput)) {
       const [title, desc, people] = userInput;
       projectState.addProject(title, desc, people);
-      //console.log(title, desc, people);
       this.clearInputs();
     }
+  }
+
+  configure() {
+    // call bind here to reconfigure how this function is going to execute
+    // when it executes in the future
+    //this.element.addEventListener('submit', this.submitHandler.bind(this));
+    this.element.addEventListener('submit', this.submitHandler);
   }
 }
 const prjInput = new ProjectInput();

@@ -19,6 +19,14 @@ class Project {
         this.status = status;
     }
 }
+class State {
+    constructor() {
+        this.listeners = [];
+    }
+    addListener(listernFn) {
+        this.listeners.push(listernFn);
+    }
+}
 function validate(validatabeInput) {
     let isValid = true;
     if (validatabeInput.required) {
@@ -70,14 +78,6 @@ class Component {
         this.hostElement.insertAdjacentElement(insertAtBeginning ? 'afterbegin' : 'beforeend', this.element);
     }
 }
-class State {
-    constructor() {
-        this.listeners = [];
-    }
-    addListener(listernFn) {
-        this.listeners.push(listernFn);
-    }
-}
 class ProjectState extends State {
     constructor() {
         super();
@@ -105,8 +105,8 @@ class ProjectState extends State {
         }
     }
     updateListeners() {
-        for (const listernFn of this.listeners) {
-            listernFn(this.projects.slice());
+        for (const listenerFn of this.listeners) {
+            listenerFn(this.projects.slice());
         }
     }
 }
@@ -212,9 +212,6 @@ class ProjectInput extends Component {
         this.peopleInputElement = this.element.querySelector('#people');
         this.configure();
     }
-    configure() {
-        this.element.addEventListener('submit', this.submitHandler);
-    }
     renderContent() { }
     gatherUserInput() {
         const enteredTitle = this.titleInputElement.value;
@@ -258,6 +255,9 @@ class ProjectInput extends Component {
             projectState.addProject(title, desc, people);
             this.clearInputs();
         }
+    }
+    configure() {
+        this.element.addEventListener('submit', this.submitHandler);
     }
 }
 __decorate([
