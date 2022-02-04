@@ -111,7 +111,7 @@ abstract class Component<T extends HTMLElement, U extends HTMLElement> {
 }
 
 // Project State Managemenent with own custom type
-type Listener<T> = (items: Project[]) => void;
+type Listener<T> = (items: T[]) => void;
 
 class State<T> {
   protected listeners: Listener<T>[] = [];
@@ -123,7 +123,6 @@ class State<T> {
 
 //Project state management
 class ProjectState extends State<Project> {
-  //private listeners: Listener[] = [];
   private projects: Project[] = [];
   private static instance: ProjectState;
 

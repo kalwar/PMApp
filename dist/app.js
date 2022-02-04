@@ -70,9 +70,17 @@ class Component {
         this.hostElement.insertAdjacentElement(insertAtBeginning ? 'afterbegin' : 'beforeend', this.element);
     }
 }
-class ProjectState {
+class State {
     constructor() {
         this.listeners = [];
+    }
+    addListener(listernFn) {
+        this.listeners.push(listernFn);
+    }
+}
+class ProjectState extends State {
+    constructor() {
+        super();
         this.projects = [];
     }
     static getInstance() {
@@ -81,9 +89,6 @@ class ProjectState {
         }
         this.instance = new ProjectState();
         return this.instance;
-    }
-    addListener(listernFn) {
-        this.listeners.push(listernFn);
     }
     addProject(title, desciption, numOfPeople) {
         const newProject = new Project(Math.random().toString(), title, desciption, numOfPeople, ProjectStatus.Active);
