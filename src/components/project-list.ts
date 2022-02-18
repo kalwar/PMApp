@@ -1,10 +1,14 @@
-import { Project, ProjectStatus } from '../models/project-model.js';
-import { Component } from './base-component.js';
-import { autobind } from '../decorators/autobind-decorator.js';
-import { projectState } from '../state/project-state.js';
-import { ProjectItem } from './project-item.js';
+import { DragTarget } from '../models/drag-and-drop';
+import { Project, ProjectStatus } from '../models/project-model';
+import { Component } from './base-component';
+import { autobind } from '../decorators/autobind-decorator';
+import { projectState } from '../state/project-state';
+import { ProjectItem } from './project-item';
 
-export class ProjectList extends Component<HTMLDivElement, HTMLElement> {
+export class ProjectList
+  extends Component<HTMLDivElement, HTMLElement>
+  implements DragTarget
+{
   assignedProjects: Project[];
   constructor(private type: 'active' | 'finished') {
     super('project-list', 'app', false, `${type}-projects`); //getting an access to methods and properties of our parent component class
@@ -22,6 +26,7 @@ export class ProjectList extends Component<HTMLDivElement, HTMLElement> {
     listEl.classList.add('droppable');
   }
 
+  @autobind
   dropHandler(event: DragEvent) {
     const prjId = event.dataTransfer!.getData('text/plain');
     projectState.moveProject(
